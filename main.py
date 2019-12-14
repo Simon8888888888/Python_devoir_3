@@ -6,19 +6,24 @@ import api
 def analyser_commande():
     """Cette fonction retire l'IDUL de l'argument d'entrée"""
     parser = argparse.ArgumentParser(
-        description="Jeu Quoridor - phase 1"
+        description="Jeu Quoridor - phase 3"
     )
     parser.add_argument(
         'idul', metavar='idul', help="IDUL du joueur."
     )
     parser.add_argument(
-        '-l', '--lister',
-        dest="lister_parties", action="store_true",
-        help="Lister les identifiants des vos 20 dernières parties."
+        '-a', '--automatique', 
+        dest='automatique', action="store_true",
+        help="Activer le mode automatique."
+    )
+    parser.add_argument(
+        '-x', '--graphique', 
+        dest='graphique', action="store_true",
+        help="Activer le mode graphique."
     )
 
     args = parser.parse_args()
-
+    
     return args
 
 
