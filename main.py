@@ -1,6 +1,8 @@
 """Ce module permet de jouer au jeu Quoridor"""
 import argparse
 import api
+import tkinter
+import turtle
 
 
 def analyser_commande():
@@ -100,39 +102,51 @@ def afficher_damier_ascii(data):
 if __name__ == "__main__":
     ARGS = analyser_commande()
     IDUL = ARGS.idul
-    LIST = ARGS.lister_parties
+    AUTOMATIQUE = ARGS.automatique  #sortir True(si caller) or False(par défault)
+    GRAPHIQUE = ARGS.graphique      #sortir True(si caller) or False(par défault)
+    
+    if IDUL:
+        print('idul peut être utilisé')
+    if AUTOMATIQUE:
+        print('automatique peut être utilisé')
+    if GRAPHIQUE: 
+        print('graphique peut être utilisé')
 
-    PLAYING = True
+wn = turtle.Screen()
+wn.bgcolor("white")
 
-    if LIST:
-        PLAYING = False
-        try:
-            print(api.lister_parties(IDUL))
-        except RuntimeError as err:
-            print(err)
-    else:
-        try:
-            PARTIE = api.débuter_partie(IDUL)
-            _ID = PARTIE[0]
-            STATE = PARTIE[1]
-            ERROR = False
-        except RuntimeError as err:
-            print(err)
-        else:
-            while PLAYING:
-                if not ERROR:
-                    afficher_damier_ascii(STATE)
-                ERROR = False
-                _TYPE = input("Entrer le mouvement (D, MH ou MV): ").upper()
-                POS_X = input('Entrer la position en X de votre mouvement: ')
-                POS_Y = input('Entrer la position en Y de votre mouvement: ')
-                try:
-                    NEW_STATE = api.jouer_coup(_ID, _TYPE, (POS_X, POS_Y))
-                except StopIteration as err:
-                    PLAYING = False
-                    print('Gagnant:', err)
-                except RuntimeError as err:
-                    print(err)
-                    ERROR = True
-                else:
-                    STATE = NEW_STATE
+
+
+    #PLAYING = True
+    # if LIST:
+    #     PLAYING = False
+    #     try:
+    #         print(api.lister_parties(IDUL))
+    #     except RuntimeError as err:
+    #         print(err)
+    # else:
+    #     try:
+    #         PARTIE = api.débuter_partie(IDUL)
+    #         _ID = PARTIE[0]
+    #         STATE = PARTIE[1]
+    #         ERROR = False
+    #     except RuntimeError as err:
+    #         print(err)
+    #     else:
+    #         while PLAYING:
+    #             if not ERROR:
+    #                 afficher_damier_ascii(STATE)
+    #             ERROR = False
+    #             _TYPE = input("Entrer le mouvement (D, MH ou MV): ").upper()
+    #             POS_X = input('Entrer la position en X de votre mouvement: ')
+    #             POS_Y = input('Entrer la position en Y de votre mouvement: ')
+    #             try:
+    #                 NEW_STATE = api.jouer_coup(_ID, _TYPE, (POS_X, POS_Y))
+    #             except StopIteration as err:
+    #                 PLAYING = False
+    #                 print('Gagnant:', err)
+    #             except RuntimeError as err:
+    #                 print(err)
+    #                 ERROR = True
+    #             else:
+    #                 STATE = NEW_STATE
