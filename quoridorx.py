@@ -66,7 +66,9 @@ class QuoridorX(Quoridor):
         encouragement.penup()
         encouragement.hideturtle()
         encouragement.setpos(-1.25, -5)
-        encouragement.write('Que la force soit avec toi trepi la tortue <3', font=style2)
+        encouragement.write(
+                        'Que la force soit avec toi trepi la tortue <3',
+                         font=style2)
 
         case = 1
         for _ in range(n):
