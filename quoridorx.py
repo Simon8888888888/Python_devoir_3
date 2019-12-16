@@ -28,11 +28,11 @@ class QuoridorX(Quoridor):
         screen = turtle.Screen()
         screen.title("Quoridor")
         screen.bgcolor("black")
-        screen.setworldcoordinates(-2.5, -4, 18, 18)
+        screen.setworldcoordinates(-2.5, -7, 18, 18)
 
         #  afficher position chiffre vertical
         chiffrev = turtle.Turtle()
-        chiffrev.color("yellow")
+        chiffrev.color("red")
         style = ('Courier', 15)
         chiffrev.hideturtle()
         chiffrev.penup()
@@ -41,7 +41,7 @@ class QuoridorX(Quoridor):
 
         # afficher position chiffre horizontal 
         chiffreh = turtle.Turtle()
-        chiffreh.color("yellow")
+        chiffreh.color("red")
         style = ('Courier', 15)
         chiffreh.hideturtle()
         chiffreh.penup()
@@ -58,6 +58,15 @@ class QuoridorX(Quoridor):
         yd = 0
         xd = 0
         damier.setpos(xd, yd)
+
+        # message d'encouragement
+        style2 = ('Courier', 20)
+        encouragement = turtle.Turtle()
+        encouragement.color("green")
+        encouragement.penup()
+        encouragement.hideturtle()
+        encouragement.setpos(-1.25, -5)
+        encouragement.write('Que la force soit avec toi trepi la tortue <3', font=style2)
 
         case = 1
         for _ in range(n):
