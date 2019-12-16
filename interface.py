@@ -1,5 +1,4 @@
 import turtle
-import os
 
 
 # screen setup
@@ -10,7 +9,7 @@ screen.setworldcoordinates(-2.5, -4, 18, 18)
 
 #  afficher position chiffre vertical
 chiffrev = turtle.Turtle()
-chiffrev.color("blue")
+chiffrev.color("yellow")
 style = ('Courier', 20)
 chiffrev.hideturtle()
 chiffrev.penup()
@@ -19,7 +18,7 @@ chiffrev.left(90)
 
 # afficher position chiffre horizontal 
 chiffreh = turtle.Turtle()
-chiffreh.color("blue")
+chiffreh.color("yellow")
 style = ('Courier', 20)
 chiffreh.hideturtle()
 chiffreh.penup()
@@ -129,7 +128,7 @@ def placer_mur_tortue(mur):
 
 
 déplacer_tortue([1, 2, 1])
-placer_mur_tortue(['h', [8, 8]])
+placer_mur_tortue(['h', [5, 2]])
 placer_mur_tortue(['v', [7, 7]])
 
     
