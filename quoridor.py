@@ -195,6 +195,7 @@ class Quoridor:
                                 tuple(self.partie["joueurs"]
                                       [joueur-1]["pos"])))):
             self.partie["joueurs"][joueur-1]["pos"] = position
+            return ('D', tuple(position))
         else:
             raise QuoridorError("Cette position n'est pas valide")
 
@@ -211,34 +212,20 @@ class Quoridor:
         elif joueur not in (1, 2):
             raise QuoridorError('Numéro de joueur invalide')
         # Définition des positions et objectifs
-        objectif_joueur = 'B1' if joueur == 1 else 'B2'
-        objectif_adverse = 'B2' if joueur == 1 else 'B1'
         i_joueur = joueur-1
-        pos_joueur = tuple(self.partie["joueurs"][i_joueur]["pos"])
         i_adverse = 1-i_joueur
-        pos_adverse = tuple(self.partie["joueurs"][i_adverse]["pos"])
         # Construction du graphique de position
-        graphe = self.construire_graphe([self.partie["joueurs"][0]["pos"],
-                                         self.partie["joueurs"][1]["pos"]],
-                                        self.partie["murs"]["horizontaux"],
-                                        self.partie["murs"]["verticaux"])
-        # Coup possible du joueur 2
-        # Si le chemin le plus court de l'adversaire est plus petit,
-        # placer un mur
-        path_adverse = nx.shortest_path(graphe,
-                                        pos_adverse,
-                                        objectif_adverse)
-        path_joueur = nx.shortest_path(graphe,
-                                       pos_joueur,
-                                       objectif_joueur)
-        losing = len(path_adverse) < len(path_joueur) and len(path_adverse) < 10
+        paths = self.get_players_paths()
+        path_joueur, path_adverse = paths[i_joueur], paths[i_adverse]
+        place_wall = len(path_adverse) <= len(path_joueur) and len(path_adverse) < 9
         got_walls = self.partie["joueurs"][i_joueur]["murs"] > 0
-        if losing and got_walls:
-            self.block_player(i_adverse, 1, i_joueur)
+        if place_wall and got_walls:
+            return self.block_player(i_adverse, 1, i_joueur)
         else:
-            self.déplacer_jeton(joueur, path_joueur[1])
+            return self.déplacer_jeton(joueur, path_joueur[1])
 
     def get_players_paths(self):
+        """Retourne le shortest path des deux joueurs"""
         pos_1 = self.partie["joueurs"][0]["pos"]
         pos_2 = self.partie["joueurs"][1]["pos"]
         graphe = self.construire_graphe([pos_1, pos_2],
@@ -255,7 +242,7 @@ class Quoridor:
         paths = self.get_players_paths()
         path_joueur, path_adverse = paths[i_joueur], paths[i_adverse]
         # Position du joueur à bloquer
-        pos = path_adverse[0]
+        pos = path_adverse[move_i-1]
         # Coup à bloquer
         block = path_adverse[move_i]
         # Trouver la position du mur pour bloquer
@@ -263,12 +250,13 @@ class Quoridor:
         diff_y = 1 if pos[1] < block[1] else 0
         # Orientation du mur
         orientation = 'vertical' if pos[0] != block[0] else 'horizontal'
+        O = 'MV' if orientation == 'vertical' else 'MH'
         # Deux position de mur possible pour bloquer un coup
-        wall_pos_1 = (pos[0]+diff_x, pos[1]+diff_y)
+        wall_pos_1 = [pos[0]+diff_x, pos[1]+diff_y]
         if orientation == 'vertical':
-            wall_pos_2 = (pos[0]+diff_x, pos[1]-1)
+            wall_pos_2 = [pos[0]+diff_x, pos[1]-1]
         else:
-            wall_pos_2 = (pos[0]-1, pos[1]+diff_y)
+            wall_pos_2 = [pos[0]-1, pos[1]+diff_y]
         # Deux position possible de mur pour bloquer
         walls = [wall_pos_1, wall_pos_2]
         # Ajout aléatoire du mur à bloquer
@@ -282,6 +270,8 @@ class Quoridor:
             if len(new_paths[i_joueur]) > len(paths[i_joueur]):
                 self.partie = copy.deepcopy(temp_partie)
                 raise QuoridorError('Ce bloquage nuit au joueur')
+            else:
+                return (O, walls[0])
         except QuoridorError:
             # Si mur 1 impossible, bloquer avec mur 2
             try:
@@ -292,13 +282,16 @@ class Quoridor:
                 if len(new_paths[i_joueur]) > len(paths[i_joueur]):
                     self.partie = copy.deepcopy(temp_partie)
                     raise QuoridorError('Ce bloquage nuit au joueur')
+                else:
+                    return (O, walls[1])
             except QuoridorError:
                 # Si mur 2 impossible, bloquer move suivant
                 if move_i+2 == len(path_adverse):
-                    self.déplacer_jeton(i_joueur+1, path_joueur[1])
+                    return self.déplacer_jeton(i_joueur+1, path_joueur[1])
                 # Si tous les moves non-blocable, déplacer jeton
                 else:
-                    self.block_player(i_adverse, move_i+1, i_joueur)
+                    return self.block_player(i_adverse, move_i+1, i_joueur)
+            
 
     def partie_terminé(self):
         """Vérifie si la partie est terminée"""
@@ -338,21 +331,25 @@ class Quoridor:
                 and orientation == "verticaux"):
             raise QuoridorError('Position de mur invalide')
 
-        # Vérifier si murs horizontaux occupé
-        if ((any(mur in self.partie["murs"]["horizontaux"] for mur
-                 in [(position[0]-1, position[1]), position,
-                     (position[0]+1, position[1])])
-             or (position[0]+1, position[1]-1)
-             in self.partie["murs"]["verticaux"])
-                and orientation == "horizontaux"):
+        mur_v = self.partie["murs"]["verticaux"]
+        mur_h = self.partie["murs"]["horizontaux"]
+
+        # Vérifier si murs occupé
+        blocking_h_h = [(position[0]-1, position[1]), tuple(position),
+                        (position[0]+1, position[1])]
+        blocking_h_v = (position[0]+1, position[1]-1)
+        blocking_v_h = (position[0]-1, position[1]+1)
+        blocking_v_v = [(position[0], position[1]-1), tuple(position),
+                        (position[0], position[1]+1)]
+        # Murs horizontaux
+        if ((any(tuple(mur) in blocking_h_h for mur in mur_h)
+             or list(blocking_h_v) in mur_v)
+            and orientation == "horizontaux"):
             raise QuoridorError('Position de mur déjà occupée')
-        # Vérifier si murs verticaux occupé
-        if ((any(mur in self.partie["murs"]["verticaux"] for mur
-                 in [(position[0], position[1]-1), position,
-                     (position[0], position[1]+1)])
-             or (position[0]-1, position[1]+1)
-             in self.partie["murs"]["horizontaux"])
-                and orientation == "verticaux"):
+        # Murs verticaux
+        if ((any(tuple(mur) in blocking_v_v for mur in mur_v)
+             or list(blocking_v_h) in mur_h)
+            and orientation == "verticaux"):
             raise QuoridorError('Position de mur déjà occupée')
 
         # - Vérifier si le nouveau mur bloque un joueur
@@ -360,9 +357,10 @@ class Quoridor:
         temp_partie["joueurs"][joueur-1]["murs"] -= 1
         temp_partie["murs"][orientation] += [position]
 
+        temp_pos_1 = tuple(temp_partie["joueurs"][0]["pos"])
+        temp_pos_2 = tuple(temp_partie["joueurs"][1]["pos"])
         # - Vérifier si le mouvement bloque un joueur
-        graphe = self.construire_graphe([temp_partie["joueurs"][0]["pos"],
-                                         temp_partie["joueurs"][1]["pos"]],
+        graphe = self.construire_graphe([temp_pos_1, temp_pos_2],
                                         temp_partie["murs"]["horizontaux"],
                                         temp_partie["murs"]["verticaux"])
         if (not nx.has_path(graphe,
