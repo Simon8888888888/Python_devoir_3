@@ -75,7 +75,9 @@ if __name__ == "__main__":
                 QUORIDOR.partie = STATE
             except StopIteration as err:
                 PLAYING = False
-                QUORIDOR.game_done()
+                if AUTOMATIQUE:
+                    QUORIDOR.afficher_tortue_gagnante(str(err))
+                    QUORIDOR.game_done()
                 print('Gagnant:', err)
             except RuntimeError as err:
                 print(err)

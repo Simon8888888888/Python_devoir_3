@@ -260,7 +260,7 @@ class Quoridor:
         # Deux position possible de mur pour bloquer
         walls = [wall_pos_1, wall_pos_2]
         # Ajout aléatoire du mur à bloquer
-        random.shuffle(walls)
+        # random.shuffle(walls)
         # Bloquer avec mur 1
         try:
             temp_partie = copy.deepcopy(self.partie)

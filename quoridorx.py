@@ -13,12 +13,13 @@ class QuoridorX(Quoridor):
     def afficher(self):
         etat = self.état_partie()
         joueur1, joueur2, murs_horiz, murs_vert = self.convertir(etat)
-        self.déplacer_tortue(joueur1, self.setup)
-        self.déplacer_tortue(joueur2, self.setup)
         if murs_horiz:
             self.placer_mur_tortue(murs_horiz, self.setup)
         if murs_vert:
             self.placer_mur_tortue(murs_vert, self.setup)
+        self.déplacer_tortue(joueur1, self.setup)
+        self.déplacer_tortue(joueur2, self.setup)
+
 
     def game_done(self):
         turtle.done()
@@ -146,6 +147,7 @@ class QuoridorX(Quoridor):
         pos_y_2 = etat["joueurs"][1]["pos"][1]      #position du joueur 2
         joueur1 = [1,pos_x_1,pos_y_1]
         joueur2 = [2,pos_x_2,pos_y_2]
+        
 
         #organisation de la position des murs
         compte_murs_horiz = 0
@@ -193,3 +195,12 @@ class QuoridorX(Quoridor):
             setup[3].setpos(((mur[1][0]-1)*2)-1, ((mur[1][1]-1)*2)-1)
             setup[3].pendown()
             setup[3].forward(4)
+
+    def afficher_tortue_gagnante(self, winner):
+            gagnant = turtle.Turtle()
+            gagnant.hideturtle()
+            gagnant.penup()
+            gagnant.setpos(-1.25, 5)
+            style3 = ('Courier', 40)
+            gagnant.color("red")
+            gagnant.write(f"Le gagnant est {winner}", font=style3)
