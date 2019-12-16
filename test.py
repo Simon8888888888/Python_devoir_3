@@ -17,7 +17,7 @@ else:
         KEEP = input("Keep game going? (Enter): ").lower()
         if not partie.partie_terminé():
             try:
-                partie.jouer_coup(1)
+                partie.jouer_coup(CURRENT_PLAYER)
                 état = partie.état_partie()
             except QuoridorError as err:
                 PLAYING = False
