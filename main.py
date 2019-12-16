@@ -4,6 +4,7 @@ import api
 import tkinter
 import turtle
 from quoridor import Quoridor
+from quoridorx import QuoridorX
 
 def analyser_commande():
     """Cette fonction retire l'IDUL de l'argument d'entrée"""
@@ -44,7 +45,10 @@ if __name__ == "__main__":
         STATE = PARTIE[1]
         JOUEURS = STATE['joueurs']
         MURS = STATE['murs']
-        QUORIDOR = Quoridor(JOUEURS, MURS)
+        if GRAPHIQUE:
+            QUORIDOR = QuoridorX(JOUEURS, MURS)
+        else:
+            QUORIDOR = Quoridor(JOUEURS, MURS)
         ERROR = False
     except RuntimeError as err:
         print(err)
@@ -53,7 +57,11 @@ if __name__ == "__main__":
         # Jouer
         while PLAYING:
             if not ERROR:
-                print(QUORIDOR)
+                if GRAPHIQUE:
+                    QUORIDOR.afficher()
+                    print(QUORIDOR)
+                else:
+                    print(QUORIDOR)
             ERROR = False
             if AUTOMATIQUE:
                 COUP = QUORIDOR.jouer_coup(1)
@@ -67,6 +75,7 @@ if __name__ == "__main__":
                 QUORIDOR.partie = STATE
             except StopIteration as err:
                 PLAYING = False
+                QUORIDOR.game_done()
                 print('Gagnant:', err)
             except RuntimeError as err:
                 print(err)

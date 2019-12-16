@@ -45,138 +45,143 @@ def convertir(etat):
     murs_vert = ["v", pos_murs_vert]
 
     return joueur1, joueur2, murs_horiz, murs_vert
-# screen set
-screen = turtle.Screen()
-screen.bgcolor("black")
-screen.setworldcoordinates(-2.5, -4, 18, 18)
 
-#  afficher position chiffre vertical
-chiffrev = turtle.Turtle()
-chiffrev.color("yellow")
-style = ('Courier', 15)
-chiffrev.hideturtle()
-chiffrev.penup()
-chiffrev.setpos(-2, -0.5)
-chiffrev.left(90)
+def start_game():  
+    # screen set
+    screen = turtle.Screen()
+    screen.bgcolor("black")
+    screen.setworldcoordinates(-2.5, -4, 18, 18)
 
-# afficher position chiffre horizontal 
-chiffreh = turtle.Turtle()
-chiffreh.color("yellow")
-style = ('Courier', 15)
-chiffreh.hideturtle()
-chiffreh.penup()
-chiffreh.setpos(0, -2.5)
+    #  afficher position chiffre vertical
+    chiffrev = turtle.Turtle()
+    chiffrev.color("yellow")
+    style = ('Courier', 15)
+    chiffrev.hideturtle()
+    chiffrev.penup()
+    chiffrev.setpos(-2, -0.5)
+    chiffrev.left(90)
 
-# dot setup
-damier = turtle.Turtle()
-damier.color("yellow")
-n = 9
-d =2 
-damier.speed(0)
-damier.hideturtle()
-damier.penup()
-yd = 0
-xd = 0
-damier.setpos(xd, yd)
+    # afficher position chiffre horizontal 
+    chiffreh = turtle.Turtle()
+    chiffreh.color("yellow")
+    style = ('Courier', 15)
+    chiffreh.hideturtle()
+    chiffreh.penup()
+    chiffreh.setpos(0, -2.5)
 
-case = 1
-for i in range(n):
-    chiffrev.write(f"{case}", font=style)
-    chiffreh.write(f"{case}", font=style)
-    xd= 0
-    damier.goto(xd, yd)
-    for j in range(n):
-        damier.dot()
-        xd = xd + d
+    # dot setup
+    damier = turtle.Turtle()
+    damier.color("yellow")
+    n = 9
+    d =2 
+    damier.speed(0)
+    damier.hideturtle()
+    damier.penup()
+    yd = 0
+    xd = 0
+    damier.setpos(xd, yd)
+
+    case = 1
+    for i in range(n):
+        chiffrev.write(f"{case}", font=style)
+        chiffreh.write(f"{case}", font=style)
+        xd= 0
         damier.goto(xd, yd)
-    yd = yd + d
-    chiffrev.forward(d)
-    chiffreh.forward(d)
-    case += 1
+        for j in range(n):
+            damier.dot()
+            xd = xd + d
+            damier.goto(xd, yd)
+        yd = yd + d
+        chiffrev.forward(d)
+        chiffreh.forward(d)
+        case += 1
 
-# set up cadre
-cadre1 = turtle.Turtle()
-cadre2 = turtle.Turtle()
-cadre1.color("blue")
-cadre2.color("blue")
-cadre1.hideturtle()
-cadre2.hideturtle()
-cadre1.penup()
-cadre2.penup()
-cadre1.setpos(-1, -1)
-cadre2.setpos(-0.75, -0.75)
-cadre1.pendown()
-cadre2.pendown()
+    # set up cadre
+    cadre1 = turtle.Turtle()
+    cadre2 = turtle.Turtle()
+    cadre1.color("blue")
+    cadre2.color("blue")
+    cadre1.hideturtle()
+    cadre2.hideturtle()
+    cadre1.penup()
+    cadre2.penup()
+    cadre1.setpos(-1, -1)
+    cadre2.setpos(-0.75, -0.75)
+    cadre1.pendown()
+    cadre2.pendown()
 
-for side in range(4):
-    cadre1.forward(18)
-    cadre2.forward(17.5)
-    cadre1.left(90)
-    cadre2.left(90)
+    for side in range(4):
+        cadre1.forward(18)
+        cadre2.forward(17.5)
+        cadre1.left(90)
+        cadre2.left(90)
 
-# setup player1 and 2
-player1 = turtle.Turtle()
-player2 = turtle.Turtle()
-player1.color("turquoise")
-player2.color("red")
-player1.shape("turtle")
-player2.shape("turtle")
-player1.hideturtle()
-player2.hideturtle()
-player1.penup()
-player2.penup()
-player1.setpos(8, 0)
-player2.setpos(8, 16)
-player1.left(90)
-player2.right(90)
-player1.showturtle()
-player2.showturtle()
+    # setup player1 and 2
+    player1 = turtle.Turtle()
+    player2 = turtle.Turtle()
+    player1.color("turquoise")
+    player2.color("red")
+    player1.shape("turtle")
+    player2.shape("turtle")
+    player1.hideturtle()
+    player2.hideturtle()
+    player1.penup()
+    player2.penup()
+    player1.setpos(8, 0)
+    player2.setpos(8, 16)
+    player1.left(90)
+    player2.right(90)
+    player1.showturtle()
+    player2.showturtle()
 
-# Tortue Mur horizontal
-mur_hor = turtle.Turtle()
-mur_hor.hideturtle()
-mur_hor.pensize(5)
-mur_hor.color("blue")
+    # Tortue Mur horizontal
+    mur_hor = turtle.Turtle()
+    mur_hor.hideturtle()
+    mur_hor.pensize(5)
+    mur_hor.color("blue")
 
-# Tortue Mur                    
-mur_ver = turtle.Turtle()
-mur_ver.hideturtle()
-mur_ver.pensize(5)
-mur_ver.left(90)
-mur_ver.color("blue")
+    # Tortue Mur                    
+    mur_ver = turtle.Turtle()
+    mur_ver.hideturtle()
+    mur_ver.pensize(5)
+    mur_ver.left(90)
+    mur_ver.color("blue")
 
-def déplacer_tortue(player):
+    return [player1, player2, mur_hor, mur_ver]
+
+def déplacer_tortue(player, setup):
     if player[0] == 1:
-        player1.goto((player[1]-1)*2, (player[2]-1)*2)
+        setup[0].goto((player[1]-1)*2, (player[2]-1)*2)
     if player[0] == 2:
-        player2.goto((player[1]-1)*2, (player[2]-1)*2)
+        setup[1].goto((player[1]-1)*2, (player[2]-1)*2)
 
-def placer_mur_tortue(mur):
+def placer_mur_tortue(mur, setup):
     if mur[0] == 'h':
-        mur_hor.penup()
-        mur_hor.setpos(((mur[1][0] - 1) * 2) - 1, ((mur[1][1]-1) * 2) - 1)
-        mur_hor.pendown()
-        mur_hor.forward(4)
+        setup[2].penup()
+        setup[2].setpos(((mur[1][0] - 1) * 2) - 1, ((mur[1][1]-1) * 2) - 1)
+        setup[2].pendown()
+        setup[2].forward(4)
     if mur[0] == 'v':
-        mur_ver.penup()
-        mur_ver.setpos(((mur[1][0]-1)*2)-1, ((mur[1][1]-1)*2)-1)
-        mur_ver.pendown()
-        mur_ver.forward(4)
-       
+        setup[3].penup()
+        setup[3].setpos(((mur[1][0]-1)*2)-1, ((mur[1][1]-1)*2)-1)
+        setup[3].pendown()
+        setup[3].forward(4)
+
+setup = start_game()
 joueur1, joueur2, murs_horiz, murs_vert = convertir(état1)
-déplacer_tortue(joueur1)
-déplacer_tortue(joueur2)
-placer_mur_tortue(murs_horiz)
-placer_mur_tortue(murs_vert)
+déplacer_tortue(joueur1, setup)
+déplacer_tortue(joueur2, setup)
+placer_mur_tortue(murs_horiz, setup)
+placer_mur_tortue(murs_vert, setup)
 
 # Wait for 5 seconds
 time.sleep(1)
 
 joueur1, joueur2, murs_horiz, murs_vert = convertir(état2)
-déplacer_tortue(joueur1)
+déplacer_tortue(joueur1, setup)
 # Wait for 5 seconds
 time.sleep(1)
-déplacer_tortue(joueur2)
+déplacer_tortue(joueur2, setup)
 
 
-turtle.done()
+#turtle.done()
