@@ -1,0 +1,182 @@
+import turtle
+import time
+
+état1 = {
+    "joueurs": [
+        {"nom": "idul", "murs": 7, "pos": [5, 1]}, 
+        {"nom": "automate", "murs": 3, "pos": [5, 9]}
+    ], 
+    "murs": {
+        "horizontaux": [[4, 4], [2, 6], [3, 8], [5, 8], [7, 8]], 
+        "verticaux": [[6, 2], [4, 4], [2, 6], [7, 5], [7, 7]]
+    }
+}
+état2 = {
+    "joueurs": [
+        {"nom": "idul", "murs": 7, "pos": [5, 2]}, 
+        {"nom": "automate", "murs": 3, "pos": [5, 8]}
+    ], 
+    "murs": {
+        "horizontaux": [[4, 4], [2, 6], [3, 8], [5, 8], [7, 8]], 
+        "verticaux": [[6, 2], [4, 4], [2, 6], [7, 5], [7, 7]]
+    }
+}
+
+def convertir(etat):
+    #organisation de la position des joueurs
+    pos_x_1 = etat["joueurs"][0]["pos"][0]      #position du joueur 1
+    pos_y_1 = etat["joueurs"][0]["pos"][1]      #position du joueur 1
+    pos_x_2 = etat["joueurs"][1]["pos"][0]      #position du joueur 2
+    pos_y_2 = etat["joueurs"][1]["pos"][1]      #position du joueur 2
+    joueur1 = [1,pos_x_1,pos_y_1]
+    joueur2 = [2,pos_x_2,pos_y_2]
+
+    #organisation de la position des murs
+    compte_murs_horiz = 0
+    compte_murs_vert = 0
+    for i in etat["murs"]["horizontaux"]:
+        compte_murs_horiz += 1
+    for i in etat["murs"]["verticaux"]:
+        compte_murs_vert += 1
+
+    pos_murs_horiz = etat["murs"]["horizontaux"][compte_murs_horiz - 1]
+    pos_murs_vert = etat["murs"]["verticaux"][compte_murs_vert - 1]
+    murs_horiz = ["h", pos_murs_horiz]
+    murs_vert = ["v", pos_murs_vert]
+
+    return joueur1, joueur2, murs_horiz, murs_vert
+# screen set
+screen = turtle.Screen()
+screen.bgcolor("black")
+screen.setworldcoordinates(-2.5, -4, 18, 18)
+
+#  afficher position chiffre vertical
+chiffrev = turtle.Turtle()
+chiffrev.color("yellow")
+style = ('Courier', 15)
+chiffrev.hideturtle()
+chiffrev.penup()
+chiffrev.setpos(-2, -0.5)
+chiffrev.left(90)
+
+# afficher position chiffre horizontal 
+chiffreh = turtle.Turtle()
+chiffreh.color("yellow")
+style = ('Courier', 15)
+chiffreh.hideturtle()
+chiffreh.penup()
+chiffreh.setpos(0, -2.5)
+
+# dot setup
+damier = turtle.Turtle()
+damier.color("yellow")
+n = 9
+d =2 
+damier.speed(0)
+damier.hideturtle()
+damier.penup()
+yd = 0
+xd = 0
+damier.setpos(xd, yd)
+
+case = 1
+for i in range(n):
+    chiffrev.write(f"{case}", font=style)
+    chiffreh.write(f"{case}", font=style)
+    xd= 0
+    damier.goto(xd, yd)
+    for j in range(n):
+        damier.dot()
+        xd = xd + d
+        damier.goto(xd, yd)
+    yd = yd + d
+    chiffrev.forward(d)
+    chiffreh.forward(d)
+    case += 1
+
+# set up cadre
+cadre1 = turtle.Turtle()
+cadre2 = turtle.Turtle()
+cadre1.color("blue")
+cadre2.color("blue")
+cadre1.hideturtle()
+cadre2.hideturtle()
+cadre1.penup()
+cadre2.penup()
+cadre1.setpos(-1, -1)
+cadre2.setpos(-0.75, -0.75)
+cadre1.pendown()
+cadre2.pendown()
+
+for side in range(4):
+    cadre1.forward(18)
+    cadre2.forward(17.5)
+    cadre1.left(90)
+    cadre2.left(90)
+
+# setup player1 and 2
+player1 = turtle.Turtle()
+player2 = turtle.Turtle()
+player1.color("turquoise")
+player2.color("red")
+player1.shape("turtle")
+player2.shape("turtle")
+player1.hideturtle()
+player2.hideturtle()
+player1.penup()
+player2.penup()
+player1.setpos(8, 0)
+player2.setpos(8, 16)
+player1.left(90)
+player2.right(90)
+player1.showturtle()
+player2.showturtle()
+
+# Tortue Mur horizontal
+mur_hor = turtle.Turtle()
+mur_hor.hideturtle()
+mur_hor.pensize(5)
+mur_hor.color("blue")
+
+# Tortue Mur                    
+mur_ver = turtle.Turtle()
+mur_ver.hideturtle()
+mur_ver.pensize(5)
+mur_ver.left(90)
+mur_ver.color("blue")
+
+def déplacer_tortue(player):
+    if player[0] == 1:
+        player1.goto((player[1]-1)*2, (player[2]-1)*2)
+    if player[0] == 2:
+        player2.goto((player[1]-1)*2, (player[2]-1)*2)
+
+def placer_mur_tortue(mur):
+    if mur[0] == 'h':
+        mur_hor.penup()
+        mur_hor.setpos(((mur[1][0] - 1) * 2) - 1, ((mur[1][1]-1) * 2) - 1)
+        mur_hor.pendown()
+        mur_hor.forward(4)
+    if mur[0] == 'v':
+        mur_ver.penup()
+        mur_ver.setpos(((mur[1][0]-1)*2)-1, ((mur[1][1]-1)*2)-1)
+        mur_ver.pendown()
+        mur_ver.forward(4)
+       
+joueur1, joueur2, murs_horiz, murs_vert = convertir(état1)
+déplacer_tortue(joueur1)
+déplacer_tortue(joueur2)
+placer_mur_tortue(murs_horiz)
+placer_mur_tortue(murs_vert)
+
+# Wait for 5 seconds
+time.sleep(1)
+
+joueur1, joueur2, murs_horiz, murs_vert = convertir(état2)
+déplacer_tortue(joueur1)
+# Wait for 5 seconds
+time.sleep(1)
+déplacer_tortue(joueur2)
+
+
+turtle.done()
