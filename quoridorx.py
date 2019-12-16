@@ -26,6 +26,7 @@ class QuoridorX(Quoridor):
     def start_game(self):  
         # screen set
         screen = turtle.Screen()
+        screen.title("Quoridor")
         screen.bgcolor("black")
         screen.setworldcoordinates(-2.5, -4, 18, 18)
 
@@ -145,11 +146,13 @@ class QuoridorX(Quoridor):
         murs_vert = None
 
         if compte_murs_horiz:
-            pos_murs_horiz = etat["murs"]["horizontaux"][compte_murs_horiz - 1]
-            murs_horiz = ["h", pos_murs_horiz]
+            pos_murs_horiz1 = etat["murs"]["horizontaux"][compte_murs_horiz - 1]
+            pos_murs_horiz2 = etat["murs"]["horizontaux"][compte_murs_horiz - 2]
+            murs_horiz = ["h", pos_murs_horiz1, pos_murs_horiz2]
         if compte_murs_vert:
-            pos_murs_vert = etat["murs"]["verticaux"][compte_murs_vert - 1]
-            murs_vert = ["v", pos_murs_vert]
+            pos_murs_vert1 = etat["murs"]["verticaux"][compte_murs_vert - 1]
+            pos_murs_vert2 = etat["murs"]["verticaux"][compte_murs_vert - 2]
+            murs_vert = ["v", pos_murs_vert1, pos_murs_vert2]
 
         return joueur1, joueur2, murs_horiz, murs_vert
 
@@ -162,10 +165,19 @@ class QuoridorX(Quoridor):
     def placer_mur_tortue(self, mur, setup):
         if mur[0] == 'h':
             setup[2].penup()
+            setup[2].setpos(((mur[2][0] - 1) * 2) - 1, ((mur[2][1]-1) * 2) - 1)
+            setup[2].pendown()
+            setup[2].forward(4)
+            setup[2].penup()
             setup[2].setpos(((mur[1][0] - 1) * 2) - 1, ((mur[1][1]-1) * 2) - 1)
             setup[2].pendown()
             setup[2].forward(4)
+
         if mur[0] == 'v':
+            setup[3].penup()
+            setup[3].setpos(((mur[2][0]-1)*2)-1, ((mur[2][1]-1)*2)-1)
+            setup[3].pendown()
+            setup[3].forward(4)
             setup[3].penup()
             setup[3].setpos(((mur[1][0]-1)*2)-1, ((mur[1][1]-1)*2)-1)
             setup[3].pendown()
