@@ -16,7 +16,6 @@ class Quoridor:
         # Initialisation vide
         self.partie = {"joueurs": [],
                        "murs": {"horizontaux": [], "verticaux": []}}
-        init_pos = [[5, 1], [5, 9]]
         nb_murs_joueurs = 0
         # Vérification du format des joueurs
         if not isinstance(joueurs, (list, tuple)):
@@ -30,7 +29,7 @@ class Quoridor:
             if isinstance(joueur, str):
                 self.partie["joueurs"] += [{"nom": joueur,
                                             "murs": 10,
-                                            "pos": init_pos[i]}]
+                                            "pos": [[5, 1], [5, 9]][i]}]
                 nb_murs_joueurs += 10
             # Joueur dictionnaire
             elif isinstance(joueur, dict):
@@ -65,10 +64,9 @@ class Quoridor:
                     raise QuoridorError('Il n\'y a pas 20 murs au total')
                 # Position murs horizontaux et verticaux
                 bounds = [(1, 8), (2, 9)]
-                orientations = ["horizontaux", "verticaux"]
                 # Initialiser une partie temporaire
                 temp_partie = copy.deepcopy(self.partie)
-                for j, orientation in enumerate(orientations):
+                for j, orientation in enumerate(["horizontaux", "verticaux"]):
                     for i, mur in enumerate(murs[orientation]):
                         # Vérification des limites des murs
                         if (not bounds[j][0] <= mur[0] <= bounds[j][1]
@@ -98,13 +96,14 @@ class Quoridor:
                         temp_partie["murs"][orientation] += [tuple(mur)]
 
                 # Vérification qu'un joueur n'est pas bloqué
-                pos_1 = tuple(temp_partie["joueurs"][0]["pos"])
-                pos_2 = tuple(temp_partie["joueurs"][1]["pos"])
                 mur_h = temp_partie["murs"]["horizontaux"]
                 mur_v = temp_partie["murs"]["verticaux"]
-                graphe = construire_graphe([pos_1, pos_2], mur_h, mur_v)
-                if (not nx.has_path(graphe, pos_1, 'B1')
-                        or not nx.has_path(graphe, pos_2, 'B2')):
+                graphe = construire_graphe([tuple(temp_partie["joueurs"][0]["pos"]),
+                                            tuple(temp_partie["joueurs"][1]["pos"])],
+                                           mur_h, mur_v)
+                if (not nx.has_path(graphe, tuple(temp_partie["joueurs"][0]["pos"]), 'B1')
+                        or not nx.has_path(graphe,
+                                           tuple(temp_partie["joueurs"][1]["pos"]), 'B2')):
                     raise QuoridorError('Un ou plusieurs joueur est bloqué')
                 self.partie = copy.deepcopy(temp_partie)
             else:
@@ -249,14 +248,13 @@ class Quoridor:
         """Bloque le mouvement move_i selon le path entré"""
         # Get paths
         paths = self.get_players_paths()
-        path_joueur, path_adverse = paths[i_joueur], paths[i_adverse]
         # Position du joueur à bloquer
-        pos = path_adverse[move_i-1]
+        pos = paths[i_adverse][move_i-1]
         # Trouver la position du mur pour bloquer
-        diff_x = 1 if pos[0] < path_adverse[move_i][0] else 0
-        diff_y = 1 if pos[1] < path_adverse[move_i][1] else 0
+        diff_x = 1 if pos[0] < paths[i_adverse][move_i][0] else 0
+        diff_y = 1 if pos[1] < paths[i_adverse][move_i][1] else 0
         # Orientation du mur
-        if pos[0] != path_adverse[move_i][0]:
+        if pos[0] != paths[i_adverse][move_i][0]:
             orientation = 'vertical'
         else:
             orientation = 'horizontal'
@@ -294,8 +292,8 @@ class Quoridor:
                 return (orient, walls[1])
             except QuoridorError:
                 # Si mur 2 impossible, bloquer move suivant
-                if move_i+2 == len(path_adverse):
-                    return self.déplacer_jeton(i_joueur+1, path_joueur[1])
+                if move_i+2 == len(paths[i_adverse]):
+                    return self.déplacer_jeton(i_joueur+1, paths[i_joueur][1])
                 # Si tous les moves non-blocable, déplacer jeton
                 return self.block_player(i_adverse, move_i+1, i_joueur)
 
