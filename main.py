@@ -1,4 +1,5 @@
 """Ce module permet de jouer au jeu Quoridor"""
+import turtle
 import argparse
 import api
 from quoridor import Quoridor
@@ -81,7 +82,7 @@ if __name__ == "__main__":
                 PLAYING = False
                 if GRAPHIQUE:
                     QUORIDOR.afficher_tortue_gagnante(str(err))
-                    QUORIDOR.game_done()
+                    turtle.done()
                 print('Gagnant:', err)
             except RuntimeError as err:
                 print(err)

@@ -10,6 +10,7 @@ class QuoridorX(Quoridor):
         super().__init__(joueurs, murs)
         self.setup = start_game(auto)
         self.afficher()
+        self.winner = None
 
     def afficher(self):
         """Affiche l'état présent de la partie"""
@@ -22,9 +23,6 @@ class QuoridorX(Quoridor):
         deplacer_tortue(joueur1, self.setup)
         deplacer_tortue(joueur2, self.setup)
 
-    def game_done(self):
-        """Conclu le module turtle, lorsque la """
-        turtle.done()
     def afficher_tortue_gagnante(self, winner):
         """Affiche sur le jeu le nom du gagnant"""
         gagnant = turtle.Turtle()
@@ -34,6 +32,7 @@ class QuoridorX(Quoridor):
         style3 = ('Courier', 30)
         gagnant.color("red")
         gagnant.write(f"Le gagnant est {winner}", font=style3)
+        self.winner = winner
 
 def start_game(automatique):
     """Initialise l'affichage de la game"""
