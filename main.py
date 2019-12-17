@@ -1,10 +1,9 @@
 """Ce module permet de jouer au jeu Quoridor"""
 import argparse
 import api
-import tkinter
-import turtle
 from quoridor import Quoridor
 from quoridorx import QuoridorX
+
 
 def analyser_commande():
     """Cette fonction retire l'IDUL de l'argument d'entrée"""
@@ -15,18 +14,18 @@ def analyser_commande():
         'idul', metavar='idul', help="IDUL du joueur."
     )
     parser.add_argument(
-        '-a', '--automatique', 
+        '-a', '--automatique',
         dest='automatique', action="store_true",
         help="Activer le mode automatique."
     )
     parser.add_argument(
-        '-x', '--graphique', 
+        '-x', '--graphique',
         dest='graphique', action="store_true",
         help="Activer le mode graphique."
     )
 
     args = parser.parse_args()
-    
+
     return args
 
 
@@ -35,7 +34,7 @@ if __name__ == "__main__":
     IDUL = ARGS.idul
     AUTOMATIQUE = ARGS.automatique
     GRAPHIQUE = ARGS.graphique
-    
+
     PLAYING = False
     WINS = []
     # Débuter partie
@@ -46,7 +45,12 @@ if __name__ == "__main__":
         JOUEURS = STATE['joueurs']
         MURS = STATE['murs']
         if GRAPHIQUE:
-            QUORIDOR = QuoridorX(JOUEURS, MURS)
+            if AUTOMATIQUE:
+                QUORIDOR = QuoridorX(JOUEURS,
+                                     MURS,
+                                     auto=True)
+            else:
+                QUORIDOR = QuoridorX(JOUEURS, MURS)
         else:
             QUORIDOR = Quoridor(JOUEURS, MURS)
         ERROR = False
@@ -56,12 +60,8 @@ if __name__ == "__main__":
         PLAYING = True
         # Jouer
         while PLAYING:
-            if not ERROR:
-                if GRAPHIQUE:
-                    QUORIDOR.afficher()
-                    print(QUORIDOR)
-                else:
-                    print(QUORIDOR)
+            if not ERROR and not GRAPHIQUE:
+                print(QUORIDOR)
             ERROR = False
             if AUTOMATIQUE:
                 COUP = QUORIDOR.jouer_coup(1)
@@ -70,12 +70,16 @@ if __name__ == "__main__":
                 POS_X = input('Entrer la position en X de votre mouvement: ')
                 POS_Y = input('Entrer la position en Y de votre mouvement: ')
                 COUP = (_TYPE, (POS_X, POS_Y))
+            if GRAPHIQUE:
+                QUORIDOR.afficher()
             try:
                 STATE = api.jouer_coup(_ID, *COUP)
                 QUORIDOR.partie = STATE
+                if GRAPHIQUE:
+                    QUORIDOR.afficher()
             except StopIteration as err:
                 PLAYING = False
-                if AUTOMATIQUE:
+                if GRAPHIQUE:
                     QUORIDOR.afficher_tortue_gagnante(str(err))
                     QUORIDOR.game_done()
                 print('Gagnant:', err)

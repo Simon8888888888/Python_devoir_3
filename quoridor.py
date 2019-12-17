@@ -22,7 +22,7 @@ class Quoridor:
         if not isinstance(joueurs, (list, tuple)):
             raise QuoridorError('Les joueurs doivent être une liste')
         # Nombre de joueur non-égal à 2
-        elif not len(joueurs) == 2:
+        if not len(joueurs) == 2:
             raise QuoridorError('La partie doit comprendre 2 joueurs')
 
         for i, joueur in enumerate(joueurs):
@@ -39,19 +39,18 @@ class Quoridor:
                          in joueur and "pos" in joueur)):
                     raise QuoridorError('Joueur fourni incomplet')
                 # Position des joueurs identique
-                elif joueurs[0]["pos"] == joueurs[1]["pos"]:
+                if joueurs[0]["pos"] == joueurs[1]["pos"]:
                     raise QuoridorError('Position d\'un joueur invalide')
-                else:
-                    # Nombre de mur invalide
-                    if joueur["murs"] > 10 or joueur["murs"] < 0:
-                        raise QuoridorError('Nb mur invalide pour un joueur')
-                    # Position du joueur hors limites
-                    elif ((not 1 <= joueur["pos"][0] <= 9)
-                          or (not 1 <= joueur["pos"][1] <= 9)):
-                        raise QuoridorError('Position d\'un joueur invalide')
-                    # Joueur valide
-                    nb_murs_joueurs += joueur["murs"]
-                    self.partie["joueurs"] += [joueur]
+                # Nombre de mur invalide
+                if joueur["murs"] > 10 or joueur["murs"] < 0:
+                    raise QuoridorError('Nb mur invalide pour un joueur')
+                # Position du joueur hors limites
+                if ((not 1 <= joueur["pos"][0] <= 9)
+                        or (not 1 <= joueur["pos"][1] <= 9)):
+                    raise QuoridorError('Position d\'un joueur invalide')
+                # Joueur valide
+                nb_murs_joueurs += joueur["murs"]
+                self.partie["joueurs"] += [joueur]
             else:
                 # Joueur non-str ou non-dict
                 raise QuoridorError('Format de joeur invalide')
@@ -79,21 +78,21 @@ class Quoridor:
                             raise QuoridorError('Position de mur invalide')
 
                         # Vérifier si murs occupé
-                        elif ((any(check in temp_partie["murs"]["horizontaux"]
-                                   for check in [(mur[0]-1, mur[1]),
-                                                 mur, (mur[0]+1, mur[1])])
-                               or (mur[0]+1, mur[1]-1)
-                               in temp_partie["murs"]["verticaux"])
-                              and orientation == "horizontaux"):
+                        if ((any(check in temp_partie["murs"]["horizontaux"]
+                                 for check in [(mur[0]-1, mur[1]),
+                                               mur, (mur[0]+1, mur[1])])
+                             or (mur[0]+1, mur[1]-1)
+                             in temp_partie["murs"]["verticaux"])
+                                and orientation == "horizontaux"):
                             raise QuoridorError('Position de mur déjà occupée')
 
                         # Vérifier si murs verticaux occupé
-                        elif ((any(check in temp_partie["murs"]["verticaux"]
-                                   for check in [(mur[0], mur[1]-1),
-                                                 mur, (mur[0], mur[1]+1)])
-                               or (mur[0]-1, mur[1]+1)
-                               in temp_partie["murs"]["horizontaux"])
-                              and orientation == "verticaux"):
+                        if ((any(check in temp_partie["murs"]["verticaux"]
+                                 for check in [(mur[0], mur[1]-1),
+                                               mur, (mur[0], mur[1]+1)])
+                             or (mur[0]-1, mur[1]+1)
+                             in temp_partie["murs"]["horizontaux"])
+                                and orientation == "verticaux"):
                             raise QuoridorError('Position de mur déjà occupée')
                         # Positions valide, mais peut-être bloque un joueur...
                         temp_partie["murs"][orientation] += [tuple(mur)]
@@ -103,7 +102,7 @@ class Quoridor:
                 pos_2 = tuple(temp_partie["joueurs"][1]["pos"])
                 mur_h = temp_partie["murs"]["horizontaux"]
                 mur_v = temp_partie["murs"]["verticaux"]
-                graphe = self.construire_graphe([pos_1, pos_2], mur_h, mur_v)
+                graphe = construire_graphe([pos_1, pos_2], mur_h, mur_v)
                 if (not nx.has_path(graphe, pos_1, 'B1')
                         or not nx.has_path(graphe, pos_2, 'B2')):
                     raise QuoridorError('Un ou plusieurs joueur est bloqué')
@@ -186,18 +185,17 @@ class Quoridor:
         # Vérification du joueur
         if joueur not in (1, 2):
             raise QuoridorError("Ce joueur n'est pas valide, doit être 1 ou 2")
-        graphe = self.construire_graphe([self.partie["joueurs"][0]["pos"],
-                                         self.partie["joueurs"][1]["pos"]],
-                                        self.partie["murs"]["horizontaux"],
-                                        self.partie["murs"]["verticaux"])
+        graphe = construire_graphe([self.partie["joueurs"][0]["pos"],
+                                    self.partie["joueurs"][1]["pos"]],
+                                   self.partie["murs"]["horizontaux"],
+                                   self.partie["murs"]["verticaux"])
         # Vérification de la position par rapport à l'état du jeu
         if (position in list(graphe.successors(
                                 tuple(self.partie["joueurs"]
                                       [joueur-1]["pos"])))):
             self.partie["joueurs"][joueur-1]["pos"] = position
             return ('D', tuple(position))
-        else:
-            raise QuoridorError("Cette position n'est pas valide")
+        raise QuoridorError("Cette position n'est pas valide")
 
     def état_partie(self):
         """Retourne un dictionnaire de la partie"""
@@ -209,7 +207,7 @@ class Quoridor:
         if self.partie_terminé():
             raise QuoridorError('Partie terminée')
         # Vérification du numéro du joueur
-        elif joueur not in (1, 2):
+        if joueur not in (1, 2):
             raise QuoridorError('Numéro de joueur invalide')
         # Définition des positions et objectifs
         i_joueur = joueur-1
@@ -217,20 +215,31 @@ class Quoridor:
         # Construction du graphique de position
         paths = self.get_players_paths()
         path_joueur, path_adverse = paths[i_joueur], paths[i_adverse]
-        place_wall = len(path_adverse) <= len(path_joueur) and len(path_adverse) < 9
-        got_walls = self.partie["joueurs"][i_joueur]["murs"] > 0
-        if place_wall and got_walls:
-            return self.block_player(i_adverse, 1, i_joueur)
+
+        player_walls = self.partie["joueurs"][i_joueur]["murs"]
+        losing = (len(path_adverse) <= len(path_joueur)
+                  and len(path_adverse) < 8)
+        # Spare wall based on how many player has left
+        if player_walls:
+            can_spare_wall = random.random() > 5/player_walls
         else:
-            return self.déplacer_jeton(joueur, path_joueur[1])
+            can_spare_wall = False
+        # Be AHole if far from
+        be_a_hole = (len(path_joueur) > 10 and can_spare_wall)
+        # Place wall if losing or feeling evil
+        place_wall = losing or be_a_hole
+        # Si murs disponibles
+        if place_wall and player_walls > 0:
+            return self.block_player(i_adverse, 1, i_joueur)
+        return self.déplacer_jeton(joueur, path_joueur[1])
 
     def get_players_paths(self):
         """Retourne le shortest path des deux joueurs"""
         pos_1 = self.partie["joueurs"][0]["pos"]
         pos_2 = self.partie["joueurs"][1]["pos"]
-        graphe = self.construire_graphe([pos_1, pos_2],
-                                        self.partie["murs"]["horizontaux"],
-                                        self.partie["murs"]["verticaux"])
+        graphe = construire_graphe([pos_1, pos_2],
+                                   self.partie["murs"]["horizontaux"],
+                                   self.partie["murs"]["verticaux"])
         path_1 = nx.shortest_path(graphe, tuple(pos_1), 'B1')
         path_2 = nx.shortest_path(graphe, tuple(pos_2), 'B2')
 
@@ -243,14 +252,15 @@ class Quoridor:
         path_joueur, path_adverse = paths[i_joueur], paths[i_adverse]
         # Position du joueur à bloquer
         pos = path_adverse[move_i-1]
-        # Coup à bloquer
-        block = path_adverse[move_i]
         # Trouver la position du mur pour bloquer
-        diff_x = 1 if pos[0] < block[0] else 0
-        diff_y = 1 if pos[1] < block[1] else 0
+        diff_x = 1 if pos[0] < path_adverse[move_i][0] else 0
+        diff_y = 1 if pos[1] < path_adverse[move_i][1] else 0
         # Orientation du mur
-        orientation = 'vertical' if pos[0] != block[0] else 'horizontal'
-        O = 'MV' if orientation == 'vertical' else 'MH'
+        if pos[0] != path_adverse[move_i][0]:
+            orientation = 'vertical'
+        else:
+            orientation = 'horizontal'
+        orient = 'MV' if orientation == 'vertical' else 'MH'
         # Deux position de mur possible pour bloquer un coup
         wall_pos_1 = [pos[0]+diff_x, pos[1]+diff_y]
         if orientation == 'vertical':
@@ -270,8 +280,7 @@ class Quoridor:
             if len(new_paths[i_joueur]) > len(paths[i_joueur]):
                 self.partie = copy.deepcopy(temp_partie)
                 raise QuoridorError('Ce bloquage nuit au joueur')
-            else:
-                return (O, walls[0])
+            return (orient, walls[0])
         except QuoridorError:
             # Si mur 1 impossible, bloquer avec mur 2
             try:
@@ -282,16 +291,13 @@ class Quoridor:
                 if len(new_paths[i_joueur]) > len(paths[i_joueur]):
                     self.partie = copy.deepcopy(temp_partie)
                     raise QuoridorError('Ce bloquage nuit au joueur')
-                else:
-                    return (O, walls[1])
+                return (orient, walls[1])
             except QuoridorError:
                 # Si mur 2 impossible, bloquer move suivant
                 if move_i+2 == len(path_adverse):
                     return self.déplacer_jeton(i_joueur+1, path_joueur[1])
                 # Si tous les moves non-blocable, déplacer jeton
-                else:
-                    return self.block_player(i_adverse, move_i+1, i_joueur)
-            
+                return self.block_player(i_adverse, move_i+1, i_joueur)
 
     def partie_terminé(self):
         """Vérifie si la partie est terminée"""
@@ -319,7 +325,7 @@ class Quoridor:
         if joueur not in (1, 2):
             raise QuoridorError('Numéro de joueur invalide')
         # Aucun mur disponible
-        elif self.partie["joueurs"][joueur-1]["murs"] <= 0:
+        if self.partie["joueurs"][joueur-1]["murs"] <= 0:
             raise QuoridorError('Le joueur n\'a plus de murs disponibles')
 
         # Vérification position murs horizontaux
@@ -343,13 +349,15 @@ class Quoridor:
                         (position[0], position[1]+1)]
         # Murs horizontaux
         if ((any(tuple(mur) in blocking_h_h for mur in mur_h)
-             or list(blocking_h_v) in mur_v)
-            and orientation == "horizontaux"):
+             or list(blocking_h_v) in mur_v
+             or tuple(blocking_h_v) in mur_v)
+                and orientation == "horizontaux"):
             raise QuoridorError('Position de mur déjà occupée')
         # Murs verticaux
         if ((any(tuple(mur) in blocking_v_v for mur in mur_v)
-             or list(blocking_v_h) in mur_h)
-            and orientation == "verticaux"):
+             or list(blocking_v_h) in mur_h
+             or tuple(blocking_v_h) in mur_h)
+                and orientation == "verticaux"):
             raise QuoridorError('Position de mur déjà occupée')
 
         # - Vérifier si le nouveau mur bloque un joueur
@@ -360,9 +368,9 @@ class Quoridor:
         temp_pos_1 = tuple(temp_partie["joueurs"][0]["pos"])
         temp_pos_2 = tuple(temp_partie["joueurs"][1]["pos"])
         # - Vérifier si le mouvement bloque un joueur
-        graphe = self.construire_graphe([temp_pos_1, temp_pos_2],
-                                        temp_partie["murs"]["horizontaux"],
-                                        temp_partie["murs"]["verticaux"])
+        graphe = construire_graphe([temp_pos_1, temp_pos_2],
+                                   temp_partie["murs"]["horizontaux"],
+                                   temp_partie["murs"]["verticaux"])
         if (not nx.has_path(graphe,
                             tuple(temp_partie["joueurs"][0]["pos"]),
                             'B1')
@@ -372,73 +380,74 @@ class Quoridor:
             raise QuoridorError('Un ou plusieurs joueur est bloqué')
         self.partie = copy.deepcopy(temp_partie)
 
-    def ajouter_lien_sauteur(self, noeud, voisin, graphe):
-        """
-        :param noeud: noeud de départ du lien.
-        :param voisin: voisin par dessus lequel il faut sauter.
-        """
-        saut = 2*voisin[0]-noeud[0], 2*voisin[1]-noeud[1]
 
-        if saut in graphe.successors(voisin):
-            # ajouter le saut en ligne droite
+def ajouter_lien_sauteur(noeud, voisin, graphe):
+    """
+    :param noeud: noeud de départ du lien.
+    :param voisin: voisin par dessus lequel il faut sauter.
+    """
+    saut = 2*voisin[0]-noeud[0], 2*voisin[1]-noeud[1]
+
+    if saut in graphe.successors(voisin):
+        # ajouter le saut en ligne droite
+        graphe.add_edge(noeud, saut)
+
+    else:
+        # ajouter les sauts en diagonale
+        for saut in graphe.successors(voisin):
             graphe.add_edge(noeud, saut)
 
-        else:
-            # ajouter les sauts en diagonale
-            for saut in graphe.successors(voisin):
-                graphe.add_edge(noeud, saut)
+    return graphe
 
-        return graphe
+def construire_graphe(joueurs, murs_horizontaux, murs_verticaux):
+    """Crée le graphe des déplacements admissibles pour les joueurs."""
+    graphe = nx.DiGraph()
 
-    def construire_graphe(self, joueurs, murs_horizontaux, murs_verticaux):
-        """Crée le graphe des déplacements admissibles pour les joueurs."""
-        graphe = nx.DiGraph()
+    # pour chaque colonne du damier
+    for _x in range(1, 10):
+        # pour chaque ligne du damier
+        for _y in range(1, 10):
+            # ajouter les arcs de tous les déplacements
+            # possibles pour cette tuile
+            if _x > 1:
+                graphe.add_edge((_x, _y), (_x-1, _y))
+            if _x < 9:
+                graphe.add_edge((_x, _y), (_x+1, _y))
+            if _y > 1:
+                graphe.add_edge((_x, _y), (_x, _y-1))
+            if _y < 9:
+                graphe.add_edge((_x, _y), (_x, _y+1))
 
-        # pour chaque colonne du damier
-        for x in range(1, 10):
-            # pour chaque ligne du damier
-            for y in range(1, 10):
-                # ajouter les arcs de tous les déplacements
-                # possibles pour cette tuile
-                if x > 1:
-                    graphe.add_edge((x, y), (x-1, y))
-                if x < 9:
-                    graphe.add_edge((x, y), (x+1, y))
-                if y > 1:
-                    graphe.add_edge((x, y), (x, y-1))
-                if y < 9:
-                    graphe.add_edge((x, y), (x, y+1))
+    # retirer tous les arcs qui croisent les murs horizontaux
+    for _x, _y in murs_horizontaux:
+        graphe.remove_edge((_x, _y-1), (_x, _y))
+        graphe.remove_edge((_x, _y), (_x, _y-1))
+        graphe.remove_edge((_x+1, _y-1), (_x+1, _y))
+        graphe.remove_edge((_x+1, _y), (_x+1, _y-1))
 
-        # retirer tous les arcs qui croisent les murs horizontaux
-        for x, y in murs_horizontaux:
-            graphe.remove_edge((x, y-1), (x, y))
-            graphe.remove_edge((x, y), (x, y-1))
-            graphe.remove_edge((x+1, y-1), (x+1, y))
-            graphe.remove_edge((x+1, y), (x+1, y-1))
+    # retirer tous les arcs qui croisent les murs verticaux
+    for _x, _y in murs_verticaux:
+        graphe.remove_edge((_x-1, _y), (_x, _y))
+        graphe.remove_edge((_x, _y), (_x-1, _y))
+        graphe.remove_edge((_x-1, _y+1), (_x, _y+1))
+        graphe.remove_edge((_x, _y+1), (_x-1, _y+1))
 
-        # retirer tous les arcs qui croisent les murs verticaux
-        for x, y in murs_verticaux:
-            graphe.remove_edge((x-1, y), (x, y))
-            graphe.remove_edge((x, y), (x-1, y))
-            graphe.remove_edge((x-1, y+1), (x, y+1))
-            graphe.remove_edge((x, y+1), (x-1, y+1))
+    # s'assurer que les positions des joueurs sont bien
+    # des tuples (et non des listes)
+    _j1, _j2 = tuple(joueurs[0]), tuple(joueurs[1])
 
-        # s'assurer que les positions des joueurs sont bien
-        # des tuples (et non des listes)
-        j1, j2 = tuple(joueurs[0]), tuple(joueurs[1])
+    # traiter le cas des joueurs adjacents
+    if _j2 in graphe.successors(_j1) or _j1 in graphe.successors(_j2):
 
-        # traiter le cas des joueurs adjacents
-        if j2 in graphe.successors(j1) or j1 in graphe.successors(j2):
+        # retirer les liens entre les joueurs
+        graphe.remove_edge(_j1, _j2)
+        graphe.remove_edge(_j2, _j1)
+        graphe = ajouter_lien_sauteur(_j1, _j2, graphe)
+        graphe = ajouter_lien_sauteur(_j2, _j1, graphe)
 
-            # retirer les liens entre les joueurs
-            graphe.remove_edge(j1, j2)
-            graphe.remove_edge(j2, j1)
-            graphe = self.ajouter_lien_sauteur(j1, j2, graphe)
-            graphe = self.ajouter_lien_sauteur(j2, j1, graphe)
+    # ajouter les destinations finales des joueurs
+    for _x in range(1, 10):
+        graphe.add_edge((_x, 9), 'B1')
+        graphe.add_edge((_x, 1), 'B2')
 
-        # ajouter les destinations finales des joueurs
-        for x in range(1, 10):
-            graphe.add_edge((x, 9), 'B1')
-            graphe.add_edge((x, 1), 'B2')
-
-        return graphe
+    return graphe
